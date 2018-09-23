@@ -25,6 +25,7 @@ class Upload extends Component {
         format: '',
         object_id: '',
         error_msg: 'Error'
+
       }
       this.Change = this.Change.bind(this);
       this.Upload = this.Upload.bind(this);

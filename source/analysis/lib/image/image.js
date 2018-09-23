@@ -68,7 +68,7 @@ const confidence_score = process.env.CONFIDENCE_SCORE;
                 * Build label metadata array
                 */
                 let labels = [];
-                for (var l in data.Labels) {
+                for (var l in data.ModerationLabels) {
                    if (data.Labels[l].Confidence >= confidence_score) {
                        labels.push(data.Labels[l].Name.toLowerCase());
                    }
@@ -383,7 +383,104 @@ const confidence_score = process.env.CONFIDENCE_SCORE;
 
            }
         };
+// DAL ADDED : https://docs.aws.amazon.com/solutions/latest/media-analysis-solution/appendix-c.html
+    image.prototype.getText = function(image_info, cb){
+        let rek_params = {
+            Image: {
+                S3Object: {
+                    Bucket: s3Bucket,
+                    Name: image_info.key
+                }
+            }
+        };
 
+        let rekognition = new AWS.Rekognition();
+        rekognition.detectText(rek_params, function(err, data) {
+            if (err) {
+                return cb(err, null);
+            }
+            else {
+
+                var texts = [];
+                for (var t in data.TextDetections) {
+                    if (data.TextDetections[t].Confidence >= confidence_score) {
+                        texts.push(data.TextDetections[t].DetectedText);
+                    }
+                }
+
+                let text_key = ['private',image_info.owner_id,'media',image_info.object_id,'results','text.json'].join("/");
+
+                let s3_params = {
+                    Bucket: s3Bucket,
+                    Key: text_key,
+                    Body: JSON.stringify(data),
+                    ContentType: 'application/json'
+                };
+
+                upload.respond(s3_params, function(err, response) {
+                    if (err){
+                        return cb(err, null);
+                    }
+                    else {
+                        let text_response = {'key': text_key, 'text': texts, 'status': "COMPLETE"};
+                        return cb(null,text_response);
+                    }
+                });
+            }
+        });
+    };
+
+    image.prototype.getModeration = function(image_info, cb){
+        let rek_params = {
+            Image: {
+                S3Object: {
+                    Bucket: s3Bucket,
+                    Name: image_info.key
+                }
+            },
+            MinConfidence : confidence_score
+        };
+
+        let rekognition = new AWS.Rekognition();
+        rekognition.detectModerationLabels(rek_params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    return cb(err, null);
+                }
+                else {
+                    /**
+                     * Build label metadata array
+                     */
+                    let moderations = [];
+                    for (var l in data.ModerationLabels) {
+                        if (data.ModerationLabels[l].Confidence >= confidence_score) {
+                            moderations.push(data.ModerationLabels[l].Name.toLowerCase());
+                        }
+                    }
+
+                    let moderation_key = ['private',image_info.owner_id,'media',image_info.object_id,'results','moderation.json'].join('/');
+
+                    let s3_params = {
+                        Bucket: s3Bucket,
+                        Key: moderation_key,
+                        Body: JSON.stringify(data),
+                        ContentType: 'application/json'
+                    };
+
+                    upload.respond(s3_params, function(err, response) {
+                        if (err){
+                            console.log(err);
+                            return cb(err, null);
+                        }
+                        else {
+                            console.log(response);
+                            let moderation_response = {'key': moderation_key, 'moderations': moderations, 'status': 'COMPLETE'};
+                            return cb(null,moderation_response);
+                        }
+                    });
+                }
+            });
+        };
     return image;
 
  })();

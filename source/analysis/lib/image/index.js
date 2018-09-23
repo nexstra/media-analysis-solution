@@ -62,4 +62,18 @@ module.exports.respond = function(event, cb) {
             }
         });
     }
+
+
+    else if (event.lambda.function_name == 'get_text') {
+        _image.getText(event, function(err, data) {
+            if (err) {
+                return cb(err, null);
+            }
+            else {
+                return cb(null, data);
+            }
+        });
+    }
+
+
 };

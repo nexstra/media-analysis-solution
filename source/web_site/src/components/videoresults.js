@@ -196,6 +196,7 @@ class VideoResults extends Component {
       var file_name = this.props.filename;
       var media_source = this.props.mediafile;
       var labels = this.props.labels;
+      var texts = this.props.texts
       //var faces = this.props.faces;
       //var face_matches = this.props.facematches;
       //var celebs = this.props.celebs;
@@ -253,7 +254,9 @@ class VideoResults extends Component {
                 <Button color="primary" className="mr-2 mt-2" onClick={() => { this.setState({tracking:"Faces", boxes: this.props.allfaces}); }}>Faces</Button>
                 <Button color="primary" className="mr-2 mt-2" onClick={() => { this.setState({tracking:"Celebrities", boxes: this.props.celebvideo}); }}>Celebrities</Button>
                 <Button color="primary" className="mr-2 mt-2" onClick={() => { this.setState({tracking:"Known Faces", boxes: this.props.allknownfaces}); }}>Known Faces</Button>
-              </div>
+        <Button color="primary" className="mr-2 mt-2" onClick={() => { this.setState({tracking:"All Text", boxes: this.props.alltexts }); }}>Recognized Text</Button>
+
+        </div>
             </Col>
           </Row>
           <Row>
@@ -272,6 +275,9 @@ class VideoResults extends Component {
                   <NavItem>
                     <NavLink active={this.state.activeTab === "celebs"} onClick={() => { this.tabToggle('celebs'); }}>Celebrities</NavLink>
                   </NavItem>
+        <NavItem>
+        <NavLink active={this.state.activeTab === "texts"} onClick={() => { this.tabToggle('texts'); }}>Celebrities</NavLink>
+        </NavItem>
                 </Nav>
                 <TabContent activeTab={this.state.activeTab}>
                   <TabPane tabId="labels">
@@ -302,6 +308,13 @@ class VideoResults extends Component {
                       </Col>
                     </Row>
                   </TabPane>
+            <TabPane tabId="texts">
+            <Row>
+            <Col align="center">
+            {texts}
+            </Col>
+            </Row>
+            </TabPane>
                 </TabContent>
               </div>
             </Col>

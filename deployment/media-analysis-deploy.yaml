@@ -332,6 +332,7 @@ Resources:
                           - "rekognition:CreateCollection"
                           - "rekognition:DetectFaces"
                           - "rekognition:DetectLabels"
+                          - "rekognition:DetectText"
                           - "rekognition:GetCelebrityRecognition"
                           - "rekognition:GetFaceDetection"
                           - "rekognition:GetFaceSearch"

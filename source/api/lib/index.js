@@ -109,7 +109,14 @@ module.exports.respond = function(event, cb) {
         else if (request.startsWith('captions')) {
             lookup_type = 'captions';
         }
-        else {
+        else if (request.startsWith('text') ) {
+            lookup_type = 'texts'
+        }
+    else if (request.startsWith('moderation') ) {
+        lookup_type = 'moderations'
+    }
+
+    else {
             _response = buildOutput(500, INVALID_PATH_ERR);
             return cb(_response, null);
         }
@@ -122,6 +129,7 @@ module.exports.respond = function(event, cb) {
                 _response = buildOutput(500, err);
                 return cb(_response, null);
             } else {
+
                 console.log(data);
                 _response = buildOutput(200, data);
                 return cb(null, _response);

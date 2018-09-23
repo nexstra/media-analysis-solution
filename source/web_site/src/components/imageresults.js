@@ -112,6 +112,8 @@ class ImageResults extends Component {
     var file_name = this.props.filename;
     var media_source = this.props.mediafile;
     var labels = this.props.labels;
+   var texts = this.props.texts;
+   var moderation_words = this.props.moderation_words;
 
 
     let atts = this.props.attlist.map(att => {
@@ -133,13 +135,21 @@ class ImageResults extends Component {
       }
     }
 
+
     var all_known_faces = [];
     for (var f in this.props.knownfaces) {
         for (var i in this.props.knownfaces[f].Impressions) {
             all_known_faces.push(this.props.knownfaces[f].Impressions[i]);
         }
     }
-
+      var all_text = [];
+      /*
+      for (var f in this.props.textwords) {
+          for (var i in this.props.text[c].Impressions) {
+              all_celebs.push(this.props.celebfaces[c].Impressions[i]);
+          }
+      }
+*/
 
         return (
           <Container>
@@ -165,7 +175,8 @@ class ImageResults extends Component {
                   <Button color="primary" className="mr-2 mt-3" active onClick={() => { this.draw(all_known_faces); }}>Show Known Faces</Button>
                   <Button color="primary" className="mr-2 mt-3" active onClick={() => { this.draw(this.props.allfaces); }}>Show All Faces</Button>
                   <Button color="primary" className="mr-2 mt-3" active onClick={() => { this.draw(all_celebs); }}>Show Celebrities</Button>
-                </div>
+                  <Button color="primary" className="mr-2 mt-3" active onClick={() => { this.draw(all_text); }}>Show Text</Button>
+      </div>
                 <div align="center">
                   <Button color="secondary" className="mt-3" onClick={() => { this.draw([]); }}>Clear All</Button>
                 </div>
@@ -187,6 +198,12 @@ class ImageResults extends Component {
                     <NavItem>
                       <NavLink active={this.state.activeTab === "celebs"} onClick={() => { this.tabToggle('celebs'); }}>Celebrities</NavLink>
                     </NavItem>
+      <NavItem>
+      <NavLink active={this.state.activeTab === "texts"} onClick={() => { this.tabToggle('text'); }}>Text</NavLink>
+      </NavItem>
+      <NavItem>
+      <NavLink active={this.state.activeTab === "moderation"} onClick={() => { this.tabToggle('moderation'); }}>Moderation</NavLink>
+      </NavItem>
                   </Nav>
                   <TabContent activeTab={this.state.activeTab}>
                     <TabPane tabId="labels">
@@ -217,7 +234,24 @@ class ImageResults extends Component {
                         </Col>
                       </Row>
                     </TabPane>
-                  </TabContent>
+                  <TabPane tabId="texts">
+                  <Row>
+                  <Col align="center">
+                  {texts}
+                  </Col>
+                  </Row>
+                  </TabPane>
+
+          <TabPane tabId="moderation">
+          <Row>
+          <Col align="center">
+          {moderation_words}
+          </Col>
+          </Row>
+          </TabPane>
+
+
+          </TabContent>
                 </div>
               </Col>
             </Row>

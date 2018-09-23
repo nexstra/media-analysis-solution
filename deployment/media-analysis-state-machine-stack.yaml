@@ -132,7 +132,29 @@ Resources:
                                       "End": true
                                     }
                                   }
+                                },
+                                {
+                                  "StartAt": "Image-Text Params",
+                                  "States": {
+                                    "Image-Text Params": {
+                                      "Type": "Pass",
+                                      "Result": {
+                                        "service_name": "image",
+                                        "function_name": "get_text"
+                                      },
+                                      "ResultPath": "$.lambda",
+                                      "Next": "Image-Get Text"
+                                    },
+                                    "Image-Get Text": {
+                                      "Type": "Task",
+                                      "Resource":"${lambdaArn}",
+                                      "InputPath": "$",
+                                      "ResultPath": "$.results.text",
+                                      "End": true
+                                    }
+                                  }
                                 }
+
                               ]
                             }
                           }

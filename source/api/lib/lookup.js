@@ -606,6 +606,66 @@ let lookup = (function() {
               }
           });
       }
+      else if (lookup_type == 'texts' ) {
+            let filename = 'text.json'
+          if (page_num > 1) {
+              filename = ['text',page_num,'.json'].join('');
+          }
+
+          let s3_params = {
+              Bucket: s3Bucket,
+              Key: ['private',owner_id,'media',object_id,'results',filename].join('/')
+          };
+
+          retrieveData(s3_params, owner_id, object_id, 'text', page_num, function(err, data) {
+              if (err) {
+                  console.log(err);
+                  return cb(err, null);
+              }
+              else {
+                  console.log('Building text data output');
+                  let text_data = JSON.parse(data.Body.toString('utf-8'));
+                  let text_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results',filename].join('/')}, 'Text':text_data};
+
+                  if (data.Next) {
+                    text_out['Next'] = data.Next;
+                  }
+
+                  return cb(null, text_out);
+              }
+          });
+
+      }
+      else if (lookup_type == 'moderations' ) {
+          let filename = 'moderation.json'
+          if (page_num > 1) {
+              filename = ['moderation',page_num,'.json'].join('');
+          }
+
+          let s3_params = {
+              Bucket: s3Bucket,
+              Key: ['private',owner_id,'media',object_id,'results',filename].join('/')
+          };
+
+          retrieveData(s3_params, owner_id, object_id, 'moderation', page_num, function(err, data) {
+              if (err) {
+                  console.log(err);
+                  return cb(err, null);
+              }
+              else {
+                  console.log('Building moderation data output');
+                  let moderation_data = JSON.parse(data.Body.toString('utf-8'));
+                  let moderation_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results',filename].join('/')}, 'Moderation':moderation_data};
+
+                  if (data.Next) {
+                      moderation_out['Next'] = data.Next;
+                  }
+
+                  return cb(null, moderation_out);
+              }
+          });
+
+      }
     };
 
     /**

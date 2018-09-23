@@ -21,6 +21,7 @@ class Result extends Component {
         celeb_list: [],
         entity_list: [],
         phrase_list: [],
+        text_list: [],
         transcript: '',
         persons: [],
         file_type: 'jpg', //needed
@@ -50,6 +51,8 @@ class Result extends Component {
       this.getEntities = this.getEntities.bind(this);
       this.getPhrases = this.getPhrases.bind(this);
       this.getCaptions = this.getCaptions.bind(this);
+      this.getTextWords = this.getTextWords.bind(this);
+      this.getModeration = this.getModeration.bind(this);
 
     }
 
@@ -87,6 +90,8 @@ class Result extends Component {
             self.getLabels();
             self.getFaces();
             self.getFaceMatches();
+            self.getTextWords();
+            self.getModeration();
         }
         else if ( response.details.file_type === 'mov') {
             self.getCelebs();
@@ -94,6 +99,8 @@ class Result extends Component {
             self.getFaces();
             self.getFaceMatches();
             self.getPersons();
+            self.getTextWords();
+            self.getModeration();
         }
         else if ( response.details.file_type === 'mp4') {
             self.getCelebs();
@@ -105,6 +112,8 @@ class Result extends Component {
             self.getEntities();
             self.getPhrases();
             self.getCaptions();
+            self.getTextWords();
+            self.getModeration();
         }
         else if ( response.details.file_type === 'mp3' || response.details.file_type === 'wav' || response.details.file_type === 'flac' || response.details.file_type === 'wave') {
             self.getTranscript();
@@ -381,11 +390,67 @@ class Result extends Component {
     _getLabels(labels_path, {});
   }
 
+
+  getTextWords() {
+      var self = this
+      var texts_path = ['/lookup', this.props.match.params.objectid, 'text'].join('/');
+      var text_list = [];
+      let _getTexts = function (path, texts) {
+          API.get('MediaAnalysisApi', texts_path, {})
+              .then(function (result) {
+                  for (var l in result.TextDetections) {
+                      if (texts.hasOwnProperty(result.TextDetections[l].DetectedText) == false) {
+                          texts[result.TextDetections[l].Name] = {
+                              'Name': result.TextDetections[l].DetectedText,
+                              'TextDetections': []
+                          };
+                          texts[result.TextDetections[l].Name].TextDetections = texts[result.TextDetections[l].Name].TextDetections.concat(result.TextDetections[l]);
+                      } else {
+                          texts[result.TextDetections[l].Name].TextDetections = texts[result.TextDetections[l].Name].TextDetections.concat(result.TextDetections[l]);
+                      }
+                  }
+                  if (result.hasOwnProperty('Next')) {
+                      _getTexts([texts_path, result.Next].join('?page='), texts);
+                  } else {
+                      let data = {'TextDetections': []};
+                      for (var i in texts) {
+                          data.TextDetections.push(texts[i]);
+                      }
+                      for (var l in data.TextDetections) {
+                          let confidence = 0;
+                          if (data.TextDetections[l].Confidence >= confidence) {
+                              confidence = data.TextDetections[l].Confidence.toFixed(3);
+                          }
+                          text_list.push({
+                              "Name": data.TextDetections[l].Name,
+                              "Confidence": confidence,
+                              "Id": [data.TextDetections[l].Name.replace(/[^\w\s]|_/g, " ").replace(/\s+/g, " "), uuidv4()].join('-')
+                          });
+                      }
+                  }
+                  self.setState({
+                      "text_list": text_list
+                  });
+              })
+              .catch(function (err) {
+                  //console.log(err);
+              });
+      }
+          _getTexts(texts_path, {});
+  }
+    getModeration() {
+        var moderation_path = ['/lookup',this.props.match.params.objectid,'moderation'].join('/');
+        var moderation_list = [];
+        var self = this
+    self.setState({
+                      "moderations": moderation_list })
+
+    }
   getCaptions() {
     var self = this;
     var video_captions = {};
     var captions_path = ['/lookup',this.props.match.params.objectid,'captions'].join('/');
-    API.get('MediaAnalysisApi', captions_path, {})
+        API.get('MediaAnalysisApi', captions_path, {})
       .then(function(data) {
           var ts = 0;
           for (var c in data.Captions) {
@@ -567,6 +632,16 @@ class Result extends Component {
                 </UncontrolledTooltip>
               </div>
             )
+        });
+        var texts = this.state.text_list.map(text => {
+            return(
+                <div style={{"display":"inline-block"}}>
+        <Button id={text.Id.replace(/\s+/g, '-').toLowerCase()} color="secondary" className="ml-1 mr-1 mb-1 mt-1">{text.Name}</Button>
+            <UncontrolledTooltip placement="top" target={text.Id.replace(/\s+/g, '-').toLowerCase()}>
+            {text.Confidence.toFixed(3)}
+        </UncontrolledTooltip>
+            </div>
+        )
         });
 
         //let persons = this.state.persons;
