@@ -200,6 +200,7 @@ class VideoResults extends Component {
       //var faces = this.props.faces;
       //var face_matches = this.props.facematches;
       //var celebs = this.props.celebs;
+      var moderation_words = this.props.moderation_words;
 
       var atts = this.props.attributes.map(att => {
           return(<Button color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => {this.setState({tracking:att.Name, boxes: att.Impressions});}}>{att.Name}</Button>)
@@ -276,8 +277,11 @@ class VideoResults extends Component {
                     <NavLink active={this.state.activeTab === "celebs"} onClick={() => { this.tabToggle('celebs'); }}>Celebrities</NavLink>
                   </NavItem>
         <NavItem>
-        <NavLink active={this.state.activeTab === "texts"} onClick={() => { this.tabToggle('texts'); }}>Celebrities</NavLink>
+        <NavLink active={this.state.activeTab === "texts"} onClick={() => { this.tabToggle('texts'); }}>Texts</NavLink>
         </NavItem>
+      <NavItem>
+      <NavLink active={this.state.activeTab === "moderations"} onClick={() => { this.tabToggle('moderations'); }}>Moderations</NavLink>
+      </NavItem>
                 </Nav>
                 <TabContent activeTab={this.state.activeTab}>
                   <TabPane tabId="labels">
@@ -315,6 +319,15 @@ class VideoResults extends Component {
             </Col>
             </Row>
             </TabPane>
+
+          <TabPane tabId="moderations">
+          <Row>
+          <Col align="center">
+          {moderation_words}
+          </Col>
+          </Row>
+          </TabPane>
+
                 </TabContent>
               </div>
             </Col>
@@ -334,6 +347,7 @@ class VideoResults extends Component {
       var phrases = this.props.phrases;
       var entities = this.props.entities;
       var transcript = this.props.transcript;
+      var moderation_words = this.props.moderation_words;
 
 
 
@@ -417,6 +431,12 @@ class VideoResults extends Component {
                   <NavItem>
                     <NavLink active={this.state.activeTab === "phrases"} onClick={() => { this.tabToggle('phrases'); }}>Phrases</NavLink>
                   </NavItem>
+        <NavItem>
+        <NavLink active={this.state.activeTab === "texts"} onClick={() => { this.tabToggle('texts'); }}>Texts</NavLink>
+        </NavItem>
+      <NavItem>
+      <NavLink active={this.state.activeTab === "moderations"} onClick={() => { this.tabToggle('moderations'); }}>Moderations</NavLink>
+      </NavItem>
                 </Nav>
                 <TabContent activeTab={this.state.activeTab}>
                   <TabPane tabId="labels">
@@ -468,6 +488,22 @@ class VideoResults extends Component {
                       </Col>
                     </Row>
                   </TabPane>
+            <TabPane tabId="texts">
+            <Row>
+            <Col align="center">
+            {texts}
+            </Col>
+            </Row>
+            </TabPane>
+
+          <TabPane tabId="moderations">
+          <Row>
+          <Col align="center">
+          {moderation_words}
+          </Col>
+          </Row>
+          </TabPane>
+
                 </TabContent>
               </div>
             </Col>

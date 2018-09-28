@@ -27,6 +27,10 @@ class StatusModal extends Component {
           entities_value: "50",
           phrases_color: "warning",
           phrases_value: "50",
+          moderations_color: "warning",
+          moderations_value: "50",
+          texts_color: "warning",
+          texts_value: "50",
           button: true
         }
         this.getStatus = this.getStatus.bind(this);
@@ -116,7 +120,23 @@ class StatusModal extends Component {
                           });
                       }
                   }
-              }
+                if ("texts" in response.analysis) {
+                    if (response.analysis.texts === "COMPLETE") {
+                        self.setState({
+                            entities_color: "success",
+                            entities_value: "100"
+                        });
+                    }
+                }
+                  if ("moderations" in response.analysis) {
+                      if (response.analysis.moderations === "COMPLETE") {
+                          self.setState({
+                              entities_color: "success",
+                              entities_value: "100"
+                          });
+                      }
+                  }
+            }
               if (response.state_machine_status === "SUCCEEDED") {
                   self.setState({
                     state_machine_color: "success",
@@ -163,6 +183,10 @@ class StatusModal extends Component {
                 <Progress animated color={this.state.face_matches_color} value={this.state.face_matches_value} />
                 <div>Celebrities</div>
                 <Progress animated color={this.state.celebs_color} value={this.state.celebs_value} />
+          <div>Text Detection</div>
+          <Progress animated color={this.state.texts_color} value={this.state.texts_value} />
+          <div>Moderated Content Detection</div>
+          <Progress animated color={this.state.moderations_color} value={this.state.moderations_value} />
               </ModalBody>
               <ModalFooter>
                 <a href={console_link}>View progress in your AWS Console</a>
@@ -225,6 +249,10 @@ class StatusModal extends Component {
                 <Progress animated color={this.state.entities_color} value={this.state.entities_value} />
                 <div>Key Phrases</div>
                 <Progress animated color={this.state.phrases_color} value={this.state.phrases_value} />
+          <div>Text Detection</div>
+          <Progress animated color={this.state.texts_color} value={this.state.texts_value} />
+          <div>Moderated Content Detection</div>
+          <Progress animated color={this.state.moderations_color} value={this.state.moderations_value} />
               </ModalBody>
               <ModalFooter>
                 <a href={console_link}>View progress in your AWS Console</a>
@@ -255,6 +283,10 @@ class StatusModal extends Component {
                 <Progress animated color={this.state.persons_color} value={this.state.persons_value} />
                 <div>Celebrities</div>
                 <Progress animated color={this.state.celebs_color} value={this.state.celebs_value} />
+          <div>Text Detection</div>
+          <Progress animated color={this.state.texts_color} value={this.state.texts_value} />
+          <div>Moderated Content Detection</div>
+          <Progress animated color={this.state.moderations_color} value={this.state.moderations_value} />
               </ModalBody>
               <ModalFooter>
                 <a href={console_link}>View progress in your AWS Console</a>

@@ -439,6 +439,7 @@ describe('Status', function() {
                     face_matches: "COMPLETE",
                     transcript: "COMPLETE",
                     entities: "COMPLETE",
+                    moderations: "COMPLETE",
                     phrases: "COMPLETE"
                 }
             };
@@ -490,6 +491,7 @@ describe('Status', function() {
                     face_matches: "IN PROGRESS",
                     transcript: "IN PROGRESS",
                     entities: "IN PROGRESS",
+                    moderations: "IN PROGRESS",
                     phrases: "IN PROGRESS"
                 }
             };

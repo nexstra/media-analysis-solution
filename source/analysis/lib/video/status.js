@@ -60,6 +60,17 @@ const s3Bucket = process.env.S3_BUCKET;
                 }
             });
         }
+         if (video_info.video.job_tag.split('_').pop() == 'moderations'){
+             rekognition.getContentModeration(params, function(err, data) {
+                 if (err){
+                     console.log(err);
+                     return cb(err, null);
+                 }
+                 else {
+                     return cb(null,data.JobStatus);
+                 }
+             });
+         }
         else if (video_info.video.job_tag.split('_').pop() == 'celebs'){
             rekognition.getCelebrityRecognition(params, function(err, data) {
                 if (err){
@@ -93,6 +104,7 @@ const s3Bucket = process.env.S3_BUCKET;
                 }
             });
         }
+
         else if (video_info.video.job_tag.split('_').pop() == 'facesearch'){
             if (video_info.video.job_id == 'NO COLLECTION') {
                 return cb(null,'NO COLLECTION');

@@ -113,7 +113,6 @@ class ImageResults extends Component {
     var media_source = this.props.mediafile;
     var labels = this.props.labels;
    var texts = this.props.texts;
-   var moderation_words = this.props.moderation_words;
 
 
     let atts = this.props.attlist.map(att => {
@@ -143,14 +142,18 @@ class ImageResults extends Component {
         }
     }
       var all_text = [];
-      /*
-      for (var f in this.props.textwords) {
-          for (var i in this.props.text[c].Impressions) {
-              all_celebs.push(this.props.celebfaces[c].Impressions[i]);
+      for (var f in this.props.texts) {
+          for (var i in this.props.texts[f].Impressions) {
+              all_text.push(this.props.texts[f].Impressions[i]);
           }
       }
-*/
-
+      var all_moderations = [];
+      for (var f in this.props.moderations ){
+          console.debug("found moderation: " + this.props.moderations[f])
+          for (var i in this.props.moderations[f].Impressions) {
+              all_text.push(this.props.moderations[f].Impressions[i]);
+          }
+      }
         return (
           <Container>
             <Row>
@@ -199,10 +202,10 @@ class ImageResults extends Component {
                       <NavLink active={this.state.activeTab === "celebs"} onClick={() => { this.tabToggle('celebs'); }}>Celebrities</NavLink>
                     </NavItem>
       <NavItem>
-      <NavLink active={this.state.activeTab === "texts"} onClick={() => { this.tabToggle('text'); }}>Text</NavLink>
+      <NavLink active={this.state.activeTab === "texts"} onClick={() => { this.tabToggle('texts'); }}>Texts</NavLink>
       </NavItem>
       <NavItem>
-      <NavLink active={this.state.activeTab === "moderation"} onClick={() => { this.tabToggle('moderation'); }}>Moderation</NavLink>
+      <NavLink active={this.state.activeTab === "moderations"} onClick={() => { this.tabToggle('moderations'); }}>Moderations</NavLink>
       </NavItem>
                   </Nav>
                   <TabContent activeTab={this.state.activeTab}>
@@ -242,10 +245,10 @@ class ImageResults extends Component {
                   </Row>
                   </TabPane>
 
-          <TabPane tabId="moderation">
+          <TabPane tabId="moderations">
           <Row>
           <Col align="center">
-          {moderation_words}
+          {all_moderations}
           </Col>
           </Row>
           </TabPane>

@@ -145,6 +145,25 @@ const confidence_score = process.env.CONFIDENCE_SCORE;
                 }
             });
         }
+       else  if (result_type == 'moderations'){
+             let label_array = [];
+             if (video_info.hasOwnProperty('results')) {
+                 label_array = video_info.results.moderations;
+                 loop_count = video_info.results.labels.loop_count;
+                 params = {
+                     JobId: video_info.video.job_id,
+                     NextToken: video_info.results.labels.next_token
+                 };
+             }
+             getModeration(params, video_info.owner_id, video_info.object_id, loop_count, label_array, function(err, data) {
+                 if (err) {
+                     return cb(err, null);
+                 }
+                 else {
+                     return cb(null, data);
+                 }
+             });
+         }
 
      };
 
@@ -206,6 +225,69 @@ const confidence_score = process.env.CONFIDENCE_SCORE;
             }
         });
      };
+    /**
+     * Gets results from Amazon Rekognition Moderation detection
+     * @param {JSON} params - information needed to retrieve results
+     * @param {string} owner_id - cognitoIdentityId of the media file owner
+     * @param {string} object_id - UUID of the media file
+     * @param {int} loop_count - retrieval count
+     * @param {array} labels - label metadata extracted
+     * @param {getLabels~callback} cb - The callback that handles the response.
+     */
+    let getModeration = function(params, owner_id, object_id, loop_count, labels, cb) {
+        let rekognition = new AWS.Rekognition();
+        rekognition.getContentModeration(params, function(err, data) {
+            if (err) {
+                return cb(err, null);
+            }
+            else {
+                let label_array =  labels
+                for (var l in data.ModerationLabels){
+                    if (data.ModerationLabels[l].ModerationLabel.Confidence >= confidence_score) {
+                        var name = data.ModerationLabels[l].ModerationLabel.ParentName;
+                        if ( name.length > 0 ) name = name + " - ";
+                        name = name + data.ModerationLabels[l].ModerationLabel.Name;
+                        name = name.toLowerCase();
+
+                        if (label_array.includes(name) == false){
+                            label_array.push(name);
+                        }
+                    }
+                }
+
+                let label_key = ['private',owner_id,'media',object_id,'results','moderations.json'].join('/');
+
+                if (loop_count != 1) {
+                    let filename = ['labels',loop_count,'.json'].join('');
+                    label_key = ['private',owner_id,'media',object_id,'results',filename].join('/');
+                }
+
+                let s3_params = {
+                    Bucket: s3Bucket,
+                    Key: label_key,
+                    Body: JSON.stringify(data),
+                    ContentType: 'application/json'
+                };
+
+                upload.respond(s3_params, function(error, result) {
+                    if (error){
+                        return cb(error, null);
+                    }
+                    else {
+                        let label_response;
+                        if (data.hasOwnProperty('NextToken')) {
+                            label_response = {'duration': data.VideoMetadata.DurationMillis, 'moderations': label_array, 'status': 'IN PROGRESS', 'loop_count':loop_count += 1, 'next_token':data.NextToken};
+                        }
+                        else {
+                            label_response = {'duration': data.VideoMetadata.DurationMillis, 'moderations': label_array.splice(0,500), 'status': 'COMPLETE', 'key': ['private',owner_id,'media',object_id,'results','labels.json'].join('/')};
+                        }
+                        console.log(label_response);
+                        return cb(null,label_response);
+                    }
+                });
+            }
+        });
+    };
 
      /**
       * Gets results from Amazon Rekognition celebrity detection

@@ -156,7 +156,7 @@ Resources:
             Runtime: nodejs8.10
             Role: !GetAtt MediaAnalysisHelperRole.Arn
             Timeout: 300
-            MemorySize: 256
+            MemorySize: 512
 
     MediaAnalysisESHelper:
         Type: Custom::CreateIndex
@@ -276,7 +276,7 @@ Resources:
             Runtime: nodejs8.10
             Role: !GetAtt MediaAnalysisFunctionRole.Arn
             Timeout: 60
-            MemorySize: 256
+            MemorySize: 512
             Environment:
                 Variables:
                     CONFIDENCE_SCORE: '0'
@@ -329,23 +329,8 @@ Resources:
                       -
                         Effect: "Allow"
                         Action:
-                          - "rekognition:CreateCollection"
-                          - "rekognition:DetectFaces"
-                          - "rekognition:DetectLabels"
-                          - "rekognition:DetectText"
-                          - "rekognition:GetCelebrityRecognition"
-                          - "rekognition:GetFaceDetection"
-                          - "rekognition:GetFaceSearch"
-                          - "rekognition:GetLabelDetection"
-                          - "rekognition:GetPersonTracking"
-                          - "rekognition:IndexFaces"
-                          - "rekognition:RecognizeCelebrities"
-                          - "rekognition:SearchFacesByImage"
-                          - "rekognition:StartCelebrityRecognition"
-                          - "rekognition:StartFaceDetection"
-                          - "rekognition:StartFaceSearch"
-                          - "rekognition:StartLabelDetection"
-                          - "rekognition:StartPersonTracking"
+                          - "rekognition:*"
+
                         # Wildcards in the Rekognition resource ARNs are present
                         # due to Rekognition needing access to collections that
                         # have IDs based off of a UUID generator.

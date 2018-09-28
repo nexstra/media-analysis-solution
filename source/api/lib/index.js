@@ -109,10 +109,10 @@ module.exports.respond = function(event, cb) {
         else if (request.startsWith('captions')) {
             lookup_type = 'captions';
         }
-        else if (request.startsWith('text') ) {
+        else if (request.startsWith('texts') ) {
             lookup_type = 'texts'
         }
-    else if (request.startsWith('moderation') ) {
+    else if (request.startsWith('moderations') ) {
         lookup_type = 'moderations'
     }
 

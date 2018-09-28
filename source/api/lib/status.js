@@ -106,7 +106,9 @@ let status = (function() {
                                           'face_matches': 'IN PROGRESS',
                                           'transcript': 'IN PROGRESS',
                                           'entities': 'IN PROGRESS',
-                                          'phrases': 'IN PROGRESS'
+                                          'phrases': 'IN PROGRESS',
+                                          'moderations':'IN PROGRESS',
+                                          'texts' : 'IN PROGRESS'
                                       }
                                   };
                                   for (var i in response) {
@@ -138,6 +140,14 @@ let status = (function() {
                                           else if (response[i].stateExitedEventDetails.name == 'Get Entities') {
                                               mp4_status_out.analysis.entities = JSON.parse(response[i].stateExitedEventDetails.output).results.entities.status;
                                           }
+
+                                          else if (response[i].stateExitedEventDetails.name == 'Get Moderation Results') {
+                                              mp4_status_out.analysis.moderations = JSON.parse(response[i].stateExitedEventDetails.output).results.moderations.status;
+                                          }
+                                          else if (response[i].stateExitedEventDetails.name == 'Get-Text Reults') {
+                                              mp4_status_out.analysis.moderations = JSON.parse(response[i].stateExitedEventDetails.output).results.texts.status;
+                                          }
+
                                       }
                                   }
                                   return cb(null, mp4_status_out);
@@ -150,7 +160,9 @@ let status = (function() {
                                           'faces': 'IN PROGRESS',
                                           'celebs': 'IN PROGRESS',
                                           'persons': 'IN PROGRESS',
-                                          'face_matches': 'IN PROGRESS'
+                                          'face_matches': 'IN PROGRESS',
+                                          'moderations':'IN PROGRESS',
+                                          'texts' : 'IN PROGRESS'
                                       }
                                   };
                                   for (var i in response) {
@@ -173,6 +185,13 @@ let status = (function() {
                                           else if (response[i].stateExitedEventDetails.name == 'Face-Match End') {
                                               mov_status_out.analysis.face_matches = JSON.parse(response[i].stateExitedEventDetails.output).results.face_matches.status;
                                           }
+                                          else if (response[i].stateExitedEventDetails.name == 'Get Moderation Results') {
+                                              mov_status_out.analysis.moderations = JSON.parse(response[i].stateExitedEventDetails.output).results.moderations.status;
+                                          }
+                                          else if (response[i].stateExitedEventDetails.name == 'Get Text Results') {
+                                              mov_status_out.analysis.moderations = JSON.parse(response[i].stateExitedEventDetails.output).results.texts.status;
+                                          }
+
                                       }
                                   }
                                   return cb(null, mov_status_out);
@@ -184,13 +203,18 @@ let status = (function() {
                                           'labels': 'IN PROGRESS',
                                           'faces': 'IN PROGRESS',
                                           'celebs': 'IN PROGRESS',
-                                          'face_matches': 'IN PROGRESS'
+                                          'face_matches': 'IN PROGRESS',
+                                          'moderations':'IN PROGRESS',
+                                          'texts' : 'IN PROGRESS'
                                       }
                                   };
                                   for (var i in response) {
                                       if ('stateExitedEventDetails' in response[i]) {
                                           if (response[i].stateExitedEventDetails.name == 'Image-Get Labels') {
                                               image_status_out.analysis.labels = JSON.parse(response[i].stateExitedEventDetails.output).results.labels.status;
+                                          }
+                                          if (response[i].stateExitedEventDetails.name == 'Image-Get Text') {
+                                              image_status_out.analysis.labels = JSON.parse(response[i].stateExitedEventDetails.output).results.texts.status;
                                           }
                                           else if (response[i].stateExitedEventDetails.name == 'Image-Get Celebs') {
                                               image_status_out.analysis.celebs = JSON.parse(response[i].stateExitedEventDetails.output).results.celebs.status;
@@ -203,6 +227,9 @@ let status = (function() {
                                           }
                                           else if (response[i].stateExitedEventDetails.name == 'Image-Face-Match End') {
                                               image_status_out.analysis.face_matches = JSON.parse(response[i].stateExitedEventDetails.output).results.face_matches.status;
+                                          }
+                                          else if (response[i].stateExitedEventDetails.name == 'Image-Get Moderations') {
+                                              image_status_out.analysis.face_matches = JSON.parse(response[i].stateExitedEventDetails.output).results.moderations.status;
                                           }
                                       }
                                   }

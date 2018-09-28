@@ -71,6 +71,33 @@ const s3Bucket = process.env.S3_BUCKET;
          });
      };
 
+    video.prototype.startModeration = function(video_info, cb) {
+        console.log('Executing video moderation detection');
+
+        let job_tag = [video_info.object_id,'moderations'].join('_');
+        let rek_params = {
+            Video: {
+                S3Object: {
+                    Bucket: s3Bucket,
+                    Name: video_info.key
+                }
+            },
+            JobTag: job_tag
+        };
+
+        let rekognition = new AWS.Rekognition();
+        rekognition.startContentModeration( rek_params, function(err, data) {
+            if (err) {
+                console.log(err);
+                return cb(err, null);
+            }
+            else {
+                let response = {'job_id': data.JobId, 'job_tag': job_tag};
+                return cb(null, response);
+            }
+        });
+    };
+
      /**
       * Tracks persons in a video
       * @param {JSON} video_info - information about the video

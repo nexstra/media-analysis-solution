@@ -607,23 +607,24 @@ let lookup = (function() {
           });
       }
       else if (lookup_type == 'texts' ) {
-            let filename = 'text.json'
+            let filename = 'texts.json'
           if (page_num > 1) {
-              filename = ['text',page_num,'.json'].join('');
+              filename = ['texts',page_num,'.json'].join('');
           }
 
           let s3_params = {
               Bucket: s3Bucket,
               Key: ['private',owner_id,'media',object_id,'results',filename].join('/')
           };
+          console.log('retrieveData fortexts');
 
-          retrieveData(s3_params, owner_id, object_id, 'text', page_num, function(err, data) {
+          retrieveData(s3_params, owner_id, object_id, 'texts', page_num, function(err, data) {
               if (err) {
                   console.log(err);
                   return cb(err, null);
               }
               else {
-                  console.log('Building text data output');
+                  console.log('Building texts data output');
                   let text_data = JSON.parse(data.Body.toString('utf-8'));
                   let text_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results',filename].join('/')}, 'Text':text_data};
 
@@ -637,9 +638,12 @@ let lookup = (function() {
 
       }
       else if (lookup_type == 'moderations' ) {
-          let filename = 'moderation.json'
+
+
+
+          let filename = 'moderations.json';
           if (page_num > 1) {
-              filename = ['moderation',page_num,'.json'].join('');
+              filename = ['moderations',page_num,'.json'].join('');
           }
 
           let s3_params = {
@@ -647,21 +651,74 @@ let lookup = (function() {
               Key: ['private',owner_id,'media',object_id,'results',filename].join('/')
           };
 
-          retrieveData(s3_params, owner_id, object_id, 'moderation', page_num, function(err, data) {
+          retrieveData(s3_params, owner_id, object_id, 'moderations', page_num, function(err, data) {
               if (err) {
                   console.log(err);
                   return cb(err, null);
               }
               else {
-                  console.log('Building moderation data output');
-                  let moderation_data = JSON.parse(data.Body.toString('utf-8'));
-                  let moderation_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results',filename].join('/')}, 'Moderation':moderation_data};
+                  console.log('Building moderations data output: data.Body: ' + data.Body.toString('utf-8') );
+                  let label_data = JSON.parse(data.Body.toString('utf-8'));
+                  let ModerationLabels = {};
+                  let labels_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results',filename].join('/')}, 'ModerationLabels':[]};
 
                   if (data.Next) {
-                      moderation_out['Next'] = data.Next;
+                      labels_out['Next'] = data.Next;
                   }
 
-                  return cb(null, moderation_out);
+                  if ('VideoMetadata' in label_data) {
+                     console.log('VideoMetadata in moderations:' )
+                      labels_out['MediaType'] = 'video';
+                      for (var l in label_data.ModerationLabels) {
+                         console.log('ModerationLabels[' + l + ']')
+                         console.log(label_data.ModerationLabels[l]  )
+                          if (label_data.ModerationLabels[l].ModerationLabel.Confidence >= confidence_score) {
+                              console.log("moderation confidence found")
+
+                              var name = label_data.ModerationLabels[l].ModerationLabel.ParentName;
+                              if ( name.length > 0 ) name = name + " - ";
+                              name = name + label_data.ModerationLabels[l].ModerationLabel.Name;
+                              name = name.toLowerCase();
+
+                              if ((name in ModerationLabels) == false) {
+                                  ModerationLabels[name] = {};
+                                  ModerationLabels[name]['Name'] = name;
+                                  ModerationLabels[name]['Impressions'] = [{'Timestamp':label_data.ModerationLabels[l].Timestamp,'Confidence':label_data.ModerationLabels[l].ModerationLabel.Confidence}];
+                              }
+                              else {
+                                  ModerationLabels[name]['Impressions'].push({'Timestamp':label_data.ModerationLabels[l].Timestamp,'Confidence':label_data.ModerationLabels[l].ModerationLabel.Confidence});
+                              }
+                          }
+                      }
+                  }
+                  else {
+                      console.log('VideoMetadata NOT in moderations:' )
+
+                      labels_out['MediaType'] = 'image';
+                      for (var l in label_data.ModerationLabels) {
+                          console.log('ModerationLabels[' + l + ']')
+                          console.log(label_data.ModerationLabels[l]  )
+                          if (label_data.ModerationLabels[l].ModerationLabel.Confidence >= confidence_score)  {
+                              var name = label_data.ModerationLabels[l].ModerationLabel.ParentName;
+                              if ( name.length > 0 ) name = name + " - ";
+                              name = name + label_data.ModerationLabels[l].ModerationLabel.Name;
+                              name = name.toLowerCase();
+
+
+                              ModerationLabels[name] = {};
+                              ModerationLabels[name]['Name'] = name;
+                              ModerationLabels[name]['Impressions']= [{'Timestamp':null, 'Confidence':label_data.ModerationLabels[l].ModerationLabel.Confidence}];
+                          }
+                      }
+                  }
+                  console.log('ModerationLabels putting into : labels_out')
+
+                  for (var i in ModerationLabels) {
+                      labels_out.ModerationLabels.push(ModerationLabels[i]);
+                  }
+                  console.log('ModerationLabels done: labels_out')
+                  console.log(JSON.stringify(labels_out) )
+                  return cb(null, labels_out);
               }
           });
 

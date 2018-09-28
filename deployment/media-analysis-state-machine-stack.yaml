@@ -514,6 +514,102 @@ Resources:
                                   }
                                 },
                                 {
+                                  "StartAt" : "Video-Moderation Params",
+                                  "States" : {
+                                    "Video-Moderation Params" : {
+                                      "Type": "Pass",
+                                      "Result": {
+                                        "service_name": "video",
+                                        "function_name": "start_moderation"
+                                      },
+                                      "ResultPath": "$.lambda",
+                                      "Next": "Video-Start Moderations"
+
+                                    },
+                                    "Video-Start Moderations": {
+                                      "Type": "Task",
+                                      "Resource": "${lambdaArn}",
+                                      "InputPath": "$",
+                                      "ResultPath": "$.video",
+                                      "Next": "Moderations Wait"
+                                    },
+                                    "Moderations Wait": {
+                                      "Type": "Wait",
+                                      "Seconds": 30,
+                                      "Next": "Moderations Status Params"
+                                    },
+                                    "Moderations Status Params": {
+                                      "Type": "Pass",
+                                      "Result": {
+                                        "service_name": "video",
+                                        "function_name": "check_status"
+                                      },
+                                      "ResultPath": "$.lambda",
+                                      "Next": "Moderations Get Status"
+                                    },
+                                    "Moderations Get Status": {
+                                      "Type": "Task",
+                                      "Resource": "${lambdaArn}",
+                                      "Next": "Moderations Complete",
+                                      "InputPath": "$",
+                                      "ResultPath": "$.video.status"
+                                    },
+                                    "Moderations Complete": {
+                                      "Type": "Choice",
+                                      "Choices": [{
+                                                    "Variable": "$.video.status",
+                                                    "StringEquals": "FAILED",
+                                                    "Next": "Moderations Failed"
+                                                  },
+                                                  {
+                                                    "Variable": "$.video.status",
+                                                    "StringEquals": "SUCCEEDED",
+                                                    "Next": "Moderations-Results Params"
+                                                  }
+                                      ],
+                                      "Default": "Moderations Wait"
+                                    },
+                                    "Moderations-Results Params": {
+                                      "Type": "Pass",
+                                      "Result": {
+                                        "service_name": "video",
+                                        "function_name": "get_results"
+                                      },
+                                      "ResultPath": "$.lambda",
+                                      "Next": "Get Moderation Results"
+                                    },
+                                    "Get Moderation Results": {
+                                      "Type": "Task",
+                                      "Resource": "${lambdaArn}",
+                                      "InputPath": "$",
+                                      "ResultPath": "$.results.moderations",
+                                      "Next": "Moderation Results Complete"
+                                    },
+                                    "Moderation Results Complete": {
+                                      "Type": "Choice",
+                                      "Choices": [{
+                                                    "Variable": "$.results.moderations.status",
+                                                    "StringEquals": "IN PROGRESS",
+                                                    "Next": "Get Moderation Results"
+                                                  },
+                                                  {
+                                                    "Variable": "$.results.moderations.status",
+                                                    "StringEquals": "COMPLETE",
+                                                    "Next": "Moderations Succeeded"
+                                                  }
+                                      ],
+                                      "Default": "Moderations Failed"
+                                    },
+                                    "Moderations Failed": {
+                                      "Type": "Fail",
+                                      "Cause": "Video moderation detection failed"
+                                    },
+                                    "Moderations Succeeded": {
+                                      "Type": "Succeed"
+                                    }
+                                  }
+                                }      ,
+                                {
                                   "StartAt": "Video-Celeb Params",
                                   "States": {
                                     "Video-Celeb Params": {

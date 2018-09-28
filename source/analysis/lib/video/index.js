@@ -82,6 +82,19 @@ module.exports.respond = function(event, cb) {
             }
         });
     }
+
+    else if (event.lambda.function_name == 'start_moderation') {
+        _video.startModeration(event, function(err, data) {
+            if (err) {
+                console.log(err);
+                return cb(err, null);
+            }
+            else {
+                return cb(null, data);
+            }
+        });
+    }
+
     else if (event.lambda.function_name == 'check_status') {
         _status.getStatus(event, function(err, data) {
             if (err) {

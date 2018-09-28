@@ -408,7 +408,7 @@ const confidence_score = process.env.CONFIDENCE_SCORE;
                     }
                 }
 
-                let text_key = ['private',image_info.owner_id,'media',image_info.object_id,'results','text.json'].join("/");
+                let text_key = ['private',image_info.owner_id,'media',image_info.object_id,'results','texts.json'].join("/");
 
                 let s3_params = {
                     Bucket: s3Bucket,
@@ -422,7 +422,7 @@ const confidence_score = process.env.CONFIDENCE_SCORE;
                         return cb(err, null);
                     }
                     else {
-                        let text_response = {'key': text_key, 'text': texts, 'status': "COMPLETE"};
+                        let text_response = {'key': text_key, 'texts': texts, 'status': "COMPLETE"};
                         return cb(null,text_response);
                     }
                 });
@@ -458,7 +458,7 @@ const confidence_score = process.env.CONFIDENCE_SCORE;
                         }
                     }
 
-                    let moderation_key = ['private',image_info.owner_id,'media',image_info.object_id,'results','moderation.json'].join('/');
+                    let moderation_key = ['private',image_info.owner_id,'media',image_info.object_id,'results','moderations.json'].join('/');
 
                     let s3_params = {
                         Bucket: s3Bucket,
