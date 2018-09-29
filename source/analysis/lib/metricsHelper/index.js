@@ -23,7 +23,7 @@ let metricsHelper = require('./metricsHelper.js');
 const metrics = process.env.METRICS;
 
 module.exports.respond = function(event, cb) {
-
+/*
     if (metrics == 'Yes') {
         let _metricsHelper = new metricsHelper();
         _metricsHelper.sendAnonymousMetric(event,function(err, data) {
@@ -37,7 +37,9 @@ module.exports.respond = function(event, cb) {
             }
         });
     }
-    else {
+    else
+    */
+    {
         return cb('Customer has elected not to send anonymous metrics', null);
     }
 

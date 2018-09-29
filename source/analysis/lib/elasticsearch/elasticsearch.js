@@ -20,8 +20,8 @@
 let AWS = require('aws-sdk');
 let creds = new AWS.EnvironmentCredentials('AWS');
 
-const endpoint = process.env.DOMAIN_ENDPOINT;
-const es_index = process.env.ES_INDEX;
+//const endpoint = process.env.DOMAIN_ENDPOINT;
+//const es_index = process.env.ES_INDEX;
 
 /**
  * Performs operations for interacting with the elasticsearch cluster
@@ -43,7 +43,7 @@ let elasticsearch = (function() {
      */
     elasticsearch.prototype.indexDocument = function(doc, cb) {
         console.log('Indexing document:', doc);
-
+/*
         let client = require('elasticsearch').Client({
             hosts: endpoint,
             connectionClass: require('http-aws-es'),
@@ -65,6 +65,7 @@ let elasticsearch = (function() {
             console.trace(error.message);
             cb(error, null);
         });
+        */
 
     };
 

@@ -20,8 +20,8 @@
 let AWS = require('aws-sdk');
 
 let creds = new AWS.EnvironmentCredentials('AWS');
-const endpoint = process.env.DOMAIN_ENDPOINT;
-const es_index = process.env.ES_INDEX;
+//const endpoint = process.env.DOMAIN_ENDPOINT;
+//const es_index = process.env.ES_INDEX;
 const search_result_limit = process.env.SEARCH_RESULT_LIMIT;
 
 /**
@@ -49,7 +49,7 @@ let search = (function() {
 
       console.log('search for term: \'' + search_term + '\'');
       console.log('searching...');
-
+/*
       let search_body = {
         'query': {
           'bool': {
@@ -82,11 +82,13 @@ let search = (function() {
         from: (page_num - 1) * search_result_limit,
         size: search_result_limit
       }).then(function(body) {
+
+      */
           let _results = {
               Items: []
           };
-          _results['total'] = body.hits.total;
-
+          _results['total'] = 0 ; // body.hits.total;
+/*
           for (let i = 0; i < body.hits.hits.length; i++) {
               console.log(body.hits.hits);
               let output = {
@@ -100,12 +102,14 @@ let search = (function() {
               _results.Items.push(output);
           }
           console.log(_results);
-
+*/
           cb(null, _results);
+          /*
       }, function(error) {
           console.trace(error.message);
           cb(error, null);
       });
+      */
     };
 
     return search;

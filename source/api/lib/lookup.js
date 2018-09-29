@@ -616,7 +616,7 @@ let lookup = (function() {
               Bucket: s3Bucket,
               Key: ['private',owner_id,'media',object_id,'results',filename].join('/')
           };
-          console.log('retrieveData fortexts');
+          console.log('retrieveData for texts');
 
           retrieveData(s3_params, owner_id, object_id, 'texts', page_num, function(err, data) {
               if (err) {

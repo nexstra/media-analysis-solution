@@ -26,13 +26,14 @@ let creds = new AWS.EnvironmentCredentials('AWS');
  *
  * @class eshelper
  */
+
 let eshelper = (function() {
 
     /**
      * @class eshelper
      * @constructor
      */
-    let eshelper = function() {};
+//    let eshelper = function() {};
 
     /**
      * Creates index in Amazon ElasticSearch
@@ -40,6 +41,7 @@ let eshelper = (function() {
      * @param {string} es_index - The Elasticsearch index
      * @param {createIndex~callback} cb - The callback that handles the response
      */
+     /*
     eshelper.prototype.createIndex = function(endpoint, es_index, cb) {
 
         console.log('Creating index:', es_index);
@@ -61,6 +63,7 @@ let eshelper = (function() {
     };
 
     return eshelper;
+    */
 
 })();
 

@@ -55,7 +55,7 @@ module.exports.respond = function(event, cb) {
                 }
             }
         }
-
+/*
         let _elasticsearch = new ElasticSearch();
         _elasticsearch.indexDocument(doc, function(err, data) {
             if (err) {
@@ -88,5 +88,7 @@ module.exports.respond = function(event, cb) {
                 });
             }
         });
+
+         */
     }
 };

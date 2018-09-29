@@ -20,8 +20,8 @@
 let AWS = require('aws-sdk');
 let creds = new AWS.EnvironmentCredentials('AWS');
 
-const endpoint = process.env.DOMAIN_ENDPOINT;
-const es_index = process.env.ES_INDEX;
+//const endpoint = process.env.DOMAIN_ENDPOINT;
+//const es_index = process.env.ES_INDEX;
 
 /**
  * Gets details for a specific document stored in Amazon ElasticSearch
@@ -44,7 +44,7 @@ let details = (function() {
      */
     details.prototype.getDocument = function(object_id, owner_id, cb) {
         console.log('Getting document for id: ', object_id);
-
+/*
         let client = require('elasticsearch').Client({
             hosts: endpoint,
             connectionClass: require('http-aws-es'),
@@ -59,8 +59,10 @@ let details = (function() {
             type: 'media',
             id: object_id
         }).then(function(body) {
-            console.log(body);
+        */
+        //    console.log(body);
             let output = {};
+           /*
             if (body._source.owner_id == owner_id) {
               output = {
                   object_id: body._source.object_id,
@@ -73,15 +75,16 @@ let details = (function() {
                     filename: body._source.name
                   }
               };
+              */
               cb(null, output);
-            }
-            else {
-              cb('User does not have access',null);
-            }
-        }, function(error) {
+            //}
+            //else {
+           //   cb('User does not have access',null);
+          //  }
+       /* }, function(error) {
             console.trace(error.message);
             cb(error, null);
-        });
+        }); */
 
     };
 

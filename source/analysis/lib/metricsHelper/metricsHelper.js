@@ -38,7 +38,7 @@ let metricsHelper = (function() {
      * @param {sendAnonymousMetric~requestCallback} cb - The callback that handles the response.
      */
     metricsHelper.prototype.sendAnonymousMetric = function(anonymous_metric, cb) {
-
+/*
         let _options = {
             hostname: 'metrics.awssolutionsbuilder.com',
             port: 443,
@@ -73,6 +73,7 @@ let metricsHelper = (function() {
             console.error(e);
             cb(['Error occurred when sending metric request.', JSON.stringify(_payload)].join(' '), null);
         });
+        */
     };
 
     return metricsHelper;
